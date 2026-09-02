@@ -1,0 +1,14 @@
+{
+  "domain": "cync",
+  "name": "Cync",
+  "codeowners": ["@Kinachi249"],
+  "config_flow": true,
+  "documentation": "https://github.com/Guys-Inc-Public/cync-homeassistant",
+  "integration_type": "hub",
+  "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/Guys-Inc-Public/cync-homeassistant/issues",
+  "requirements": [
+    "pycync @ https://github.com/Guys-Inc-Public/pycync/releases/download/v0.7.0-guysinc.1/pycync-0.7.0-py3-none-any.whl"
+  ],
+  "version": "0.7.0"
+}
