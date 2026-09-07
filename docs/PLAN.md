@@ -137,4 +137,8 @@ checklist passes:
   script staged.
 - 2026-09-02: pycync fork (51 tests passing on Python 3.13), component built, override installed,
   entry migrated to 2.2. Waiting on the password since then.
-- 2026-09-06: these notes added to the repo.
+- 2026-09-06: these notes added to the repo. Re-authentication done in the HA UI at 21:29 EDT: Cync
+  required an emailed code (the entry had no stored resource yet, so this counted as a new install).
+  The entry now holds the email, password and resource. 36 lights from the shared home were created,
+  no "not found on user account" lines. Q2 and Q5 answered yes. Q1, Q3 and Q4 wait on the first
+  refresh (about 2026-09-12) and a restart after it.
