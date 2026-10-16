@@ -1,4 +1,4 @@
-<img src="https://brand.guysinc.pub/banner/readme-header.svg" alt="Guys Inc" width="100%">
+<img src="docs/assets/readme-header.svg" alt="Guys Inc" width="100%">
 
 # cync-homeassistant
 
