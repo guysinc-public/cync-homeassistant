@@ -1,6 +1,14 @@
-# Cync for Home Assistant (Guys Inc build)
+<img src="https://brand.guysinc.pub/banner/readme-header.svg" alt="Guys Inc" width="100%">
 
-A drop-in replacement for Home Assistant's built-in `cync` integration, built to fix two problems:
+# cync-homeassistant
+
+A drop-in replacement for Home Assistant's built-in Cync integration: sign-in that survives token rotation, and discovery of shared homes.
+
+![Licence](https://img.shields.io/badge/licence-MIT-ff67bd?style=flat-square&labelColor=0e090f)
+![Build](https://github.com/guysinc-public/cync-homeassistant/actions/workflows/check.yml/badge.svg)
+![Docs](https://img.shields.io/badge/docs-reviewed_2026--10--15-22dcb3?style=flat-square&labelColor=0e090f)
+
+It replaces the stock `cync` integration to fix two problems:
 
 1. **Two-factor codes every few days.** The stock integration never persisted the refresh tokens the
    library rotated, threw away the reason a refresh failed, mistook a wrong password for a two-factor
@@ -12,7 +20,7 @@ A drop-in replacement for Home Assistant's built-in `cync` integration, built to
    This build discovers shared homes as well, and creates their devices even when your account has no
    record of them.
 
-It runs on the [Guys Inc fork of pycync](https://github.com/Guys-Inc-Public/pycync), branch
+It runs on the [Guys Inc fork of pycync](https://github.com/guysinc-forks/pycync), branch
 `fix/auth-and-shared-homes`, installed from the wheel attached to that fork's release.
 
 ## Install
