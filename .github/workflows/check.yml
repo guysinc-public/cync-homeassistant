@@ -1,5 +1,6 @@
 # The one check every repository exposes (ADRs 0020, 0021): the organisation ruleset requires a check named "check".
-# Keep the repository's own jobs; list every one of them under `needs`. This job fails if any failed or was cancelled.
+# Keep the repository's own jobs; list under `needs` every one that runs on a pull request. This job fails unless every
+# needed job succeeded: a skipped or cancelled job did not check the pull request, and an empty `needs` checks nothing.
 # No `paths:` filter on this workflow: a required check that never starts blocks the merge.
 # The Actions budget (ADR 0023, amended 2026-10-03): non-draft pull requests only, never push to main,
 # cancel superseded runs per ref, a timeout on every job. A docs-only change skips heavy jobs inside the job, not here.
@@ -30,18 +31,25 @@ jobs:
         run: python -m compileall -q custom_components docs
       - name: The manifest, strings and translations are valid JSON
         run: |
-          files=$(find custom_components -name '*.json')
-          test -n "$files"   # a component with no manifest is not what this repository looks like
-          for f in $files; do python -c 'import json, sys; json.load(open(sys.argv[1]))' "$f"; done
+          # Every .json under custom_components/; a component with no manifest is not what this repository looks like.
+          test -n "$(find custom_components -name '*.json' -print -quit)"
+          find custom_components -name '*.json' -print0 | while IFS= read -r -d '' f; do python -c 'import json, sys; json.load(open(sys.argv[1]))' "$f" || exit 1; done
   check:
-    if: ${{ always() && !github.event.pull_request.draft }}
+    # Skipped on a draft on purpose: GitHub never merges a draft whatever its checks say, so a draft costs no minutes (ADRs 0023, 0034).
+    if: ${{ always() && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
     needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Every needed job passed
+      - name: Every needed job succeeded
         env:
           RESULTS: ${{ toJSON(needs.*.result) }}
         run: |
           echo "$RESULTS"
-          jq -e 'all(.[]; . == "success" or . == "skipped")' <<<"$RESULTS"
+          # Plain shell, so the step runs on any runner. At least one job, and every one of them "success":
+          # a skipped or cancelled job did not check the pull request, and no other value is known.
+          results=$(printf '%s' "$RESULTS" | tr -d '[]"' | tr -d '[:space:]' | tr ',' ' ')
+          test -n "$results" || { echo "::error::check needs no job"; exit 1; }
+          for result in $results; do
+            test "$result" = success || { echo "::error::a needed job ended $result"; exit 1; }
+          done
