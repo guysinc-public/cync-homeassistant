@@ -1,0 +1,55 @@
+# The one check every repository exposes (ADRs 0020, 0021): the organisation ruleset requires a check named "check".
+# Keep the repository's own jobs; list under `needs` every one that runs on a pull request. This job fails unless every
+# needed job succeeded: a skipped or cancelled job did not check the pull request, and an empty `needs` checks nothing.
+# No `paths:` filter on this workflow: a required check that never starts blocks the merge.
+# The Actions budget (ADR 0023, amended 2026-10-03): non-draft pull requests only, never push to main,
+# cancel superseded runs per ref, a timeout on every job. A docs-only change skips heavy jobs inside the job, not here.
+name: check
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    # A Home Assistant custom component with no tests. Home Assistant's own validators, hassfest
+    # (home-assistant/actions) and hacs/action, are not on the organisation's Actions allow-list, so this
+    # runs what the stack has: every Python file parses under 3.13 (the component uses 3.12 syntax; Home
+    # Assistant 2025.11 runs 3.13), and the manifest, strings and translations are valid JSON.
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with: { persist-credentials: false }
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with: { python-version: "3.13" }
+      - name: Every Python file parses
+        run: python -m compileall -q custom_components docs
+      - name: The manifest, strings and translations are valid JSON
+        run: |
+          # Every .json under custom_components/; a component with no manifest is not what this repository looks like.
+          test -n "$(find custom_components -name '*.json' -print -quit)"
+          find custom_components -name '*.json' -print0 | while IFS= read -r -d '' f; do python -c 'import json, sys; json.load(open(sys.argv[1]))' "$f" || exit 1; done
+  check:
+    # Skipped on a draft on purpose: GitHub never merges a draft whatever its checks say, so a draft costs no minutes (ADRs 0023, 0034).
+    if: ${{ always() && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
+    needs: [test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Every needed job succeeded
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          # Plain shell, so the step runs on any runner. At least one job, and every one of them "success":
+          # a skipped or cancelled job did not check the pull request, and no other value is known.
+          results=$(printf '%s' "$RESULTS" | tr -d '[]"' | tr -d '[:space:]' | tr ',' ' ')
+          test -n "$results" || { echo "::error::check needs no job"; exit 1; }
+          for result in $results; do
+            test "$result" = success || { echo "::error::a needed job ended $result"; exit 1; }
+          done
