@@ -1,7 +1,7 @@
 {
   "extraKnownMarketplaces": {
     "guys-inc": {
-      "source": { "source": "github", "repo": "Guys-Inc-Public/Branding-Standards" }
+      "source": { "source": "github", "repo": "guysinc-cloud/Branding-Standards" }
     }
   },
   "enabledPlugins": {
