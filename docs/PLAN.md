@@ -7,7 +7,7 @@ what is still unknown, how to test it, and what is left to do. Dates are absolut
 
 | Piece | Location |
 |---|---|
-| Library fork | `Guys-Inc-Public/pycync`, branch `fix/auth-and-shared-homes`, version 0.7.0 |
+| Library fork | `guysinc-forks/pycync`, branch `fix/auth-and-shared-homes`, version 0.7.0 |
 | Library wheel | release `v0.7.0-guysinc.1` on that fork (pinned in `manifest.json`) |
 | Component | this repo, `custom_components/cync` |
 | Installed copy | Home Assistant volume, `config/custom_components/cync` (identical to this repo) |

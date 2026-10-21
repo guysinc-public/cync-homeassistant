@@ -1,4 +1,4 @@
-<img src="docs/assets/readme-header.svg" alt="Guys Inc" width="100%">
+<img src="docs/assets/readme-header.svg" alt="guysinc-public · cync-homeassistant: Home Assistant Cync integration with resilient auth and shared-home discovery (custom_components override)" width="100%">
 
 # cync-homeassistant
 
@@ -7,6 +7,22 @@ A drop-in replacement for Home Assistant's built-in Cync integration: sign-in th
 ![Licence](https://img.shields.io/badge/licence-MIT-ff67bd?style=flat-square&labelColor=0e090f)
 ![Build](https://github.com/guysinc-public/cync-homeassistant/actions/workflows/check.yml/badge.svg)
 ![Docs](https://img.shields.io/badge/docs-reviewed_2026--10--15-22dcb3?style=flat-square&labelColor=0e090f)
+![Version](https://img.shields.io/badge/version-v0.7.0-a984fb?style=flat-square&labelColor=0e090f)
+
+## Quickstart
+
+```console
+$ git clone https://github.com/guysinc-public/cync-homeassistant.git
+$ cp -r cync-homeassistant/custom_components/cync /path/to/homeassistant/config/custom_components/
+```
+
+Then restart Home Assistant. A custom integration with the same domain replaces the built-in one; delete the directory
+to go back. Home Assistant installs the pinned pycync wheel from GitHub on start-up.
+
+Existing entries are migrated in place. The first re-authentication after installing stores your email and
+password on the entry so that later expiries are handled without you.
+
+## What it fixes
 
 It replaces the stock `cync` integration to fix two problems:
 
@@ -22,15 +38,6 @@ It replaces the stock `cync` integration to fix two problems:
 
 It runs on the [Guys Inc fork of pycync](https://github.com/guysinc-forks/pycync), branch
 `fix/auth-and-shared-homes`, installed from the wheel attached to that fork's release.
-
-## Install
-
-Copy `custom_components/cync` into your Home Assistant `config/custom_components/` directory and restart
-Home Assistant. A custom integration with the same domain replaces the built-in one; delete the directory
-to go back. Home Assistant installs the pinned pycync wheel from GitHub on start-up.
-
-Existing entries are migrated in place. The first re-authentication after installing stores your email and
-password on the entry so that later expiries are handled without you.
 
 ## Status
 
