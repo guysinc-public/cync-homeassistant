@@ -8,7 +8,7 @@
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/guysinc-public/cync-homeassistant/issues",
   "requirements": [
-    "pycync @ https://github.com/Guys-Inc-Public/pycync/releases/download/v0.7.0-guysinc.1/pycync-0.7.0-py3-none-any.whl"
+    "pycync @ https://github.com/guysinc-forks/pycync/releases/download/v0.7.0-guysinc.1/pycync-0.7.0-py3-none-any.whl"
   ],
   "version": "0.7.0"
 }
