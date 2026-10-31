@@ -8,6 +8,9 @@ name: check
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  # The merge queue runs check again on the queued commit (Branding-Standards ADR 0044).
+  merge_group:
+    types: [checks_requested]
 permissions:
   contents: read
 concurrency:
@@ -36,7 +39,7 @@ jobs:
           find custom_components -name '*.json' -print0 | while IFS= read -r -d '' f; do python -c 'import json, sys; json.load(open(sys.argv[1]))' "$f" || exit 1; done
   check:
     # Skipped on a draft on purpose: GitHub never merges a draft whatever its checks say, so a draft costs no minutes (ADRs 0023, 0034).
-    if: ${{ always() && github.event_name == 'pull_request' && !github.event.pull_request.draft }}
+    if: ${{ always() && (github.event_name == 'pull_request' || github.event_name == 'merge_group') && !github.event.pull_request.draft }}
     needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 10
